@@ -1,0 +1,47 @@
+/* Container for all product boxes */
+.product-grid {
+   padding-top: 8%;
+    display:flex;
+    flex-wrap: wrap; 
+    gap: 20px; 
+    justify-content: flex-start; 
+    margin-top: 3%;
+    padding: 0 20px; 
+}
+
+
+.product-box {
+    position: relative;
+    width: 200px; 
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    margin-bottom: 10px; 
+}
+
+
+.delete-checkbox {  
+    position: absolute;
+    margin-right: 100px;
+   }
+
+
+.product-box p {
+    margin: 10px;
+    flex-grow: 1;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .product-grid {
+        margin-top: 50px; /
+    }
+    .product-box {
+        width: 100%; 
+        margin-bottom: 15px;
+    }
+}
