@@ -4,7 +4,7 @@
         <h1>Products List</h1>
     </div>
     <nav>
-
+	
         <?php if ($currentPage === 'add_product_form.php'): ?>
             <!-- Cancel button (navigates back to product list) -->
             <a href="<?= htmlspecialchars($deleteButtonLink) ?>" class="button" id="second-btn">
@@ -17,7 +17,7 @@
 
 
         <?php else: ?>
-            <!-- Mass Delete button -->
+            <!-- Mass Delete button nd the id -->
             <a href="#" class="button" id="delete-product-btn">
                  <?= htmlspecialchars($deleteButtonText) ?>
             </a>
