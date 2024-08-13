@@ -1,0 +1,46 @@
+#product_form {
+    margin: 0 10px;
+    padding: 20px;
+   
+}
+#product_form h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+#product_form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333; 
+}
+#product_form input,
+#product_form select {
+    width: 100%; 
+    padding: 10px;
+    margin-bottom: 15px; 
+    border: 1px solid #7a7474; 
+    border-radius: 4px; 
+    box-sizing: border-box; 
+    font-size: 16px; 
+}
+#product_form input:focus,
+#product_form select:focus {
+    border-color: #007bff; 
+    outline: none;
+}
+#attribute-fields {
+    margin-top: 20px; 
+}
+
+.error-message {
+    color: red;
+    font-size: 0.875em;
+    margin-top: 5px;
+}
+.input-error {
+    border-color: red;
+    background-color: #fbeae9; 
+    color: #c0392b;
+}
