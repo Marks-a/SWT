@@ -7,10 +7,10 @@ use PDO;
 use PDOException;
 class Database {
   
-    private $host = 'sql7.freesqldatabase.com';
-    private $db_name = 'sql7725464';
-    private $username = 'sql7725464';
-    private $password = 'iZi7DXXEfY';
+    private $host = 'localhost';
+    private $db_name = 'product';
+    private $username = 'root';
+    private $password = '';
     private $conn;
 
     public function connect() {

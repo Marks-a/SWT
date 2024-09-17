@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/App/templates/styles/product_list.css">
     <link rel="stylesheet" href="/App/templates/styles/add_product_form.css">
     <link rel="stylesheet" href="/App/templates/styles/footer.css">
+    
 </head>
 <body>
 </body>

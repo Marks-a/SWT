@@ -1,5 +1,6 @@
 <?php
 namespace App\Posts;
+
 class Post_handler extends Post_main{
     private $currentPage;
     public function __construct($currentPage){

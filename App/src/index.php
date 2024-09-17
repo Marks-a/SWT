@@ -9,6 +9,10 @@ use App\Handling\PageControllers\headerController;
 use App\Handling\PageControllers\footerController;
 use App\Handling\PageControllers\productListController;
 use App\Handling\PageControllers\add_productController;
+
+
+
+
 $page = isset($_GET['page']) ? $_GET['page'] : 'product_list';
 new HeaderController($page);
 if ($page === 'add_product_form.php') {
@@ -22,4 +26,3 @@ new footerController();
     } catch (Exception $e) {
         echo "Error in footerController: " . $e->getMessage() . "<br>";
     }
-

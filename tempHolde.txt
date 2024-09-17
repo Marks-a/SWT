@@ -1,0 +1,148 @@
+       <a href="<?php echo $pageAction->getDeleteButtonLink(); ?>" class="button" id="deleteProductBtn"><?php echo $pageAction->getDeleteButtonText(); ?></a>
+             <a href="<?php echo $pageAction->getActionButtonLink(); ?>" class="button" id="addButton"><?php echo $pageAction->getActionButtonText(); ?></a> -->
+
+               <!-- <nav>
+            <a href="index.php">Product List</a>
+            
+               $currentPage = basename($_SERVER['PHP_SELF']);
+           
+            if ($currentPage == 'index.php') {
+                include_once'../Handling/ProductListPage.php';
+                $pageAction = new ProductListPage();
+            } else {
+                include_once '../Handling/AddProductPage.php';
+                $pageAction = new AddProductPage();
+            }?>
+      
+        </nav> -->
+
+
+
+         <?php use App\Handling\TemplateController; ?> 
+            <?php if (!empty($items)): ?>
+                <?php foreach ($items as $item): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($item['SKU']); ?></td>
+                        <td><?php echo htmlspecialchars($item['name']); ?></td>
+                        <td><?php echo htmlspecialchars($item['price']); ?></td>
+                        <td><?php echo htmlspecialchars($item['type']); ?></td>
+                        <td><?php echo htmlspecialchars($item['attribute']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="5">No products found.</td>
+                </tr>
+            <?php endif; ?>
+
+
+
+
+08.06
+            ///////////////////////////////////////////////
+             <?php
+    //Php for handling 'POST' from the 'Add_product_form.php' and delete
+    use App\classes\ProductListPage;
+    use App\classes\Database;
+
+    $datbase = new Database();
+    $conn = $datbase->connect();
+    $product = new ProductListPage($conn); ?>
+    <?php
+    //  Php for deleting objects
+    if (
+        $_SERVER['REQUEST_METHOD'] == 'POST' &&
+        !empty($_POST['items'])
+    ) {
+        try {
+            $itemsToDelete = $_POST['items'];
+            $product->delete($itemsToDelete);
+
+        } catch (Exception $e) {
+            echo "No items selected for deletion.";
+        }
+    }
+    ?>
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && $currentPage === 'add_product_form.php') {
+        try {
+            $productSku = $_POST['sku'];
+            $productName = $_POST['name'];
+            $productPrice = $_POST['price'];
+            $productType = $_POST['type'];
+            $attributes = [];
+            if (isset($_POST['size'])) {
+                $attributes['Size (MB)'] = $_POST['size'];
+            } elseif (isset($_POST['weight'])) {
+                $attributes['Weight (KG)'] = $_POST['weight'];
+            } elseif (isset($_POST['height']) && isset($_POST['width']) && isset($_POST['length'])) {
+                $attributes['Height (CM)'] = $_POST['height'];
+                $attributes['Width (CM)'] = $_POST['width'];
+                $attributes['Length (CM)'] = $_POST['length'];
+            }
+            $product->setSku($productSku);
+            $product->setName($productName);
+            $product->setPrice($productPrice);
+            $product->setType($productType);
+            $formattedAttributes = [];
+            foreach ($attributes as $key => $value) {
+                $formattedAttributes[] = "$key: $value";
+            }
+            $attributeString = implode(', ', $formattedAttributes);
+            $product->setAttribute($attributeString);
+            $product->create();
+        } catch (PDOException $e) {
+            if ($e->getCode() == 23000) {
+                echo "Error: The SKU already exist";
+            } else {
+                echo "Error: Try/catch block |" . $e->getMessage();
+            }
+        }
+    }
+    ?>
+
+
+
+    /////////////////
+
+     <?php else: ?>
+            <!-- Mass Delete button (toggles checkboxes and deletes selected items) -->
+            <a href="#" class="button" id="mass-delete-btn">
+                <?= htmlspecialchars($deleteButtonText) ?>
+            </a>
+            <form id="delete-product-btn" method="post" action="<?= htmlspecialchars($deleteButtonLink) ?>" style="display:none;">
+                <input type="hidden" name="items" id="items-to-delete" value="">
+            </form>
+            <!-- Add button (navigates to add product form) -->
+            <a href="?page=<?= htmlspecialchars($actionButtonLink) ?>" class="button">
+                <?= htmlspecialchars($actionButtonText) ?>
+            </a>
+        <?php endif; ?>
+////////////////
+ const formOptions = event.target;
+                //Checkers
+                const sku = formOptions.querySelector('sku');
+                if (!sku.value.match(/^[A-Za-z0-9]{1,10}$/)) {
+                    showError(sku, "Please, provide a valid SKU (alphanumeric, up to 10 characters).");
+                    isValid = false;
+                }
+                const name = formOptions.querySelector('name');
+                if (!name.value.match(/^[A-Za-z0-9]{1,10}$/)) {
+                    showError(sku, "Please, provide a valid Name (alphanumeric, up to 10 characters).");
+                    isValid = false;
+                }
+                const price = formOptions.querySelector('price');
+                if (price.value <= 0 || isNaN(price.value)) {
+                    showError(price, "Please, provide a valid price (positive number).");
+                    isValid = false;
+                }
+
+
+
+                /////////////////////
+                <?php foreach ($items as $dbTable): ?>
+            <li><?php echo htmlspecialchars($item['name']); ?></li>
+        <?php endforeach; ?>
+
+
+        

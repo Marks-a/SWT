@@ -1,4 +1,9 @@
-<?php use App\Posts\Post_handler; ?>
+<?php
+use App\Posts\Post_handler;
+use App\classes\ProductTypes;
+
+$productTypeManager = new ProductTypes();
+?>
 <h2>Add Product</h2>
 <form method="POST" id="product_form">
     <label for="sku">SKU:</label>
@@ -11,14 +16,18 @@
     <input type="number" name="price" id="price" required min="0" step="0.01">
     <br>
     <label for="type">Type:</label>
-    <select name="type" id="productType" required onclick="showAttributeFields(this.value)">
-        <option value="" disabled selected>Select type</option>
-        <option value="DVD">DVD</option>
-        <option value="Book">Book</option>
-        <option value="Furniture">Furniture</option>
+    <select name="type" id="productType" required onchange="
+     showAttributeFields(this.value)
+    ">
+        <?php
+        // Render product type options dynamically
+        echo $productTypeManager->renderProductTypeOptions();
+        ?>
     </select>
     <br>
-    <div id="attribute-fields"></div>
+    <div id="attribute-fields">
+
+    </div>
     <div id='error-message'></div>
 </form>
 <?php
@@ -26,38 +35,22 @@ $page = isset($_GET['page']) ? $_GET['page'] : null;
 (new Post_handler($page))->addButton();
 ?>
 
-<script>
-    function showAttributeFields(type) {
-        const attributeFields = document.getElementById('attribute-fields');
-        attributeFields.innerHTML = '';
 
-        if (type === 'DVD') {
-            attributeFields.innerHTML = `
-            <p>Please, provide size</p>
-            <label for="size">Size (MB):</label>
-            <input type="number" name="size" id="size" required min="0" step="0.01">
-            <br>
-        `;
-        } else if (type === 'Book') {
-            attributeFields.innerHTML = `
-         <p>Please, provide weight</p>
-            <label for="weight">Weight (KG):</label>
-            <input type="number" name="weight" id="weight" required min="0" step="0.01">
-            <br>
-        `;
-        } else if (type === 'Furniture') {
-            attributeFields.innerHTML = `
-        <p>Please, provide dimensions</p>
-            <label for="height">Height (CM):</label>
-            <input type="number" name="height" id="height" required min="0" step="0.01">
-            <br>
-            <label for="width">Width (CM):</label>
-            <input type="number" name="width" id="width" required min="0" step="0.01">
-            <br>
-            <label for="length">Length (CM):</label>
-            <input type="number" name="length" id="length" required min="0" step="0.01">
-            <br>
-        `;
-        }
+<script>
+    function showAttributeFields(productType) {
+        fetch(`http://localhost/App/Handling/ProductTypeHandler.php?productType=${encodeURIComponent(productType)}`)
+            .then(response => response.text()) 
+            .then(data => {
+              
+                document.getElementById('attribute-fields').innerHTML = data;
+            })
+            .catch(error => console.error('Error fetching data:', error));
     }
 </script>
+
+<!-- <select name="type" id="productType" required onclick="showAttributeFields(this.value)">
+        <option value="" disabled selected>Select type</option>
+        <option value="DVD">DVD</option>
+        <option value="Book">Book</option>
+        <option value="Furniture">Furniture</option>
+    </select> -->

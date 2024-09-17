@@ -5,6 +5,9 @@ use App\classes\ProductListPage;
 use App\classes\Database;
 use Exception;
 use PDOException;
+use App\classes\subClasses\Book;
+use App\classes\subClasses\Dvd;
+use App\classes\subClasses\Furniture;
 
 // ini_set('display_errors', 1);
 // ini_set('display_startup_errors', 1);
@@ -12,12 +15,12 @@ use PDOException;
 class Post_main
 {
     public $product;
+    public $conn;
     public function __construct()
     {
         $datbase = new Database();
-        $conn = $datbase->connect();
+        $this->conn = $datbase->connect();
         //Using the previously constructed PHP OOP class.
-        $this->product = new ProductListPage($conn);
     }
 
     public function handleRequestDelete()
@@ -27,6 +30,7 @@ class Post_main
             !empty($_POST['items'])
         ) {
             try {
+                $this->product = new ProductListPage($this->conn);
                 $itemsToDelete = $_POST['items'];
                 $this->product->delete($itemsToDelete);
                 //Needs testing to see if this needed. with the header and exit.
@@ -42,10 +46,11 @@ class Post_main
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST' && $currentPage === 'add_product_form.php') {
             try {
-                $productSku = $_POST['sku'];
-                $productName = $_POST['name'];
-                $productPrice = $_POST['price'];
-                $productType = $_POST['type'];
+                // $this->product = null;
+                $productSku = $_POST['sku'] ?? null;
+                $productName = $_POST['name'] ?? null;
+                $productPrice = $_POST['price'] ?? null;
+                $productType = $_POST['type'] ?? null;
                 $errors = [];
 
                 // Validate required fields
@@ -61,32 +66,85 @@ class Post_main
                 if (empty($productType)) {
                     $errors[] = 'Product type in POST is required.';
                 }
+
                 $attributes = [];
                 if (isset($_POST['size'])) {
-                    $attributes['Size (MB)'] = $_POST['size'];
+                    // $attributes['Size (MB)'] = $_POST['size'];
+                    $attributes[] = $_POST['size'];
                 } elseif (isset($_POST['weight'])) {
-                    $attributes['Weight (KG)'] = $_POST['weight'];
+                    // $attributes['Weight (KG)'] = $_POST['weight'];
+                    $attributes[] = $_POST['weight'];
                 } elseif (isset($_POST['height']) && isset($_POST['width']) && isset($_POST['length'])) {
-                    $attributes['Height (CM)'] = $_POST['height'];
-                    $attributes['Width (CM)'] = $_POST['width'];
-                    $attributes['Length (CM)'] = $_POST['length'];
+                    $attributes[] = $_POST['height'];
+                    $attributes[] = $_POST['width'];
+                    $attributes[] = $_POST['length'];
+                    // $attributes['Height (CM)'] = $_POST['height'];
+                    // $attributes['Width (CM)'] = $_POST['width'];
+                    // $attributes['Length (CM)'] = $_POST['length'];
                 }
                 if (empty($attributes)) {
                     $errors[] = 'Chosen type attributes is required.';
                 }
 
                 if (empty($errors)) {
-                    $this->product->setSku($productSku);
-                    $this->product->setName($productName);
-                    $this->product->setPrice($productPrice);
-                    $this->product->setType($productType);
-                    $formattedAttributes = [];
-                    foreach ($attributes as $key => $value) {
-                        $formattedAttributes[] = "$key: $value";
+                    switch ($productType) {
+                        case 'Book':
+                            $this->product = new Book(
+                                $this->conn,
+                                $productSku,
+                                $productName,
+                                $productPrice,
+                                $attributes[0]
+                            );
+                            $this->product->setSku($productSku);
+                            $this->product->setName($productName);
+                            $this->product->setPrice($productPrice);
+                            // $this->product->setSku($productSku);
+                            break;
+                        case 'Dvd':
+                            $this->product = new DVD(
+                                $this->conn,
+                                $productSku,
+                                $productName,
+                                $productPrice,
+                                $attributes[0]
+                            );
+                            echo "Dvd added Succesfully";
+                            break;
+                        case 'Furniture':
+                            $this->product = new Furniture(
+                                $this->conn,
+                                $productSku,
+                                $productName,
+                                $productPrice,
+                                $attributes[0],
+                                $attributes[1],
+                                $attributes[2]
+                            );
+                            echo "Furniture added Succesfully";
+                            break;
                     }
-                    $attributeString = implode(', ', $formattedAttributes);
-                    $this->product->setAttribute($attributeString);
+                    echo "This product will now be created...";
                     $this->product->create();
+                    $this->product = null;
+
+
+
+
+                    // $this->product->setSku($productSku);
+                    // $this->product->setName($productName);
+                    // $this->product->setPrice($productPrice);
+                    // $this->product->setType($productType);
+                    // $formattedAttributes = [];
+                    // foreach ($attributes as $key => $value) {
+                    //     $formattedAttributes[] = "$key: $value";
+                    // }
+                    // $attributeString = implode(', ', $formattedAttributes);
+                    // $this->product->setAttribute($attributeString);
+
+
+
+                    // $this->product->create();
                     echo 'Successfully added';
                     header('Location: /');
                     exit();
@@ -98,12 +156,15 @@ class Post_main
                     exit();
                 }
             } catch (PDOException $e) {
+                $errorCode = $e->getCode();
+                $errorMessage = $e->getMessage();
+                echo '<p class="error-message">Error Code: ' . $errorCode . ' | Message: ' . $errorMessage . '</p>';
                 if ($e->getCode() == 23000) {
                     echo '<p class="error-message">Error: The SKU already exists</p>';
                     ob_flush();
                     flush();
                 } else {
-                    echo  '<p class="error-message">Error: Try/catch block |</p>' . $e->getMessage();
+                    echo '<p class="error-message">Error: Try/catch block |</p>' . $e->getMessage();
                     ob_flush();
                     flush();
                 }

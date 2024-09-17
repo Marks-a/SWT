@@ -1,4 +1,7 @@
-<?php use App\Posts\Post_handler; ?>
+<?php 
+use App\Posts\Post_handler;
+use App\classes\AbstractProduct;
+ ?>
 <header>
     <div class="header-right">
         <h1>Products List</h1>
@@ -33,6 +36,14 @@
     <?php
     $page = isset($_GET['page']) ? $_GET['page'] : null;
     (new Post_handler($page))->deleteButton();
+    ?>
+    <?php
+    // For dynamically getting the attributes for javascript checking, if the class/Attribute exist.
+    $attributes = AbstractProduct::getAttSelectors();
+    echo '<script>
+    const attributeSelectors = ' . json_encode($attributes) . ';
+    </script>
+    ';
     ?>
     <script>
         // Function to show error messages
@@ -95,17 +106,12 @@
                 if (!type || type.value === '') {
                     showError(type, "Please, choose a type");
                     isValid = false;
-                }
-
-                const attributeSelectors = {
-                    DVD: ['#size'],
-                    Book: ['#weight'],
-                    Furniture: ['#height', '#width', '#length']
-                };
+                } else {
                 const selectedType = productType.value;
-                const selectors = attributeSelectors[selectedType] || [];
-                selectors.forEach(selector => {
-                    const attribute = form.querySelector(selector);
+                const nestedAtt = Object.values(attributeSelectors[selectedType])[0];
+                const attributesArray = typeof nestedAtt === 'string' ? [nestedAtt] : nestedAtt;
+                    attributesArray.forEach(selector => {
+                    const attribute = form.querySelector(`#${selector}`); 
                     if (!attribute) {
                         // If attribute field is not found
                         showError(productType, `Missing required attribute field for ${selectedType}.`);
@@ -114,8 +120,10 @@
                         // If attribute field is found 
                         showError(attribute, `Please, provide a valid ${selector.replace('#', '')} (positive number).`);
                         isValid = false;
+                        }
                     }
-                });
+                )
+                
                 if (!isValid) {
                     showError(sku, 'Fill in all required fields');
                 }
@@ -128,8 +136,10 @@
                 } else {
                     console.log('Fill in all required fields');
                 }
-            })
+          }   
         }
+      )
+    }
     </script>
     <script>
         const deleteBtn = document.getElementById('delete-product-btn');
